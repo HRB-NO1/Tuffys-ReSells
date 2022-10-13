@@ -1,0 +1,41 @@
+<link rel='stylesheet' type='text/css' href='/index.css' />
+<div class="header">
+</div>
+
+<head>
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="{{ url_for('static',     filename='signup.css') }}">
+</head>
+
+<style>
+  p {
+    background-image: url('Cal-State-Fullerton-Titans-Logo-2000-2009.png');
+  }
+</style>
+
+
+
+  <form action="/sign_up" method="post">
+
+  <div style="text-align: center">
+
+    <h5>{{message}}</h5>
+
+  </div>
+
+  <h3>Sign Up</h3>
+  <p><input name="username" placeholder="Username" value="{{ username }}"></p>
+
+  <p><input name="password" placeholder="Password" type="password"></p>
+
+  <p><button type="submit">Sign Up</button></p>
+
+  </form>
+
+
+<div class="footer">
+  <h4>Cal State Fullerton</h4>
+  <h6>CPSC362</h6>
+  <h6>Keith, Tyler, Edgardo, Parish</h6>
+
+</div>
