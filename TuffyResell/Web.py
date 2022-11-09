@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # coding:utf-8
+#pip install sqlalchemy
+#pip install flask_sqlalchemy
 
 from flask import Flask, request, render_template
 import os, sqlite3
@@ -9,7 +11,7 @@ from werkzeug.utils import secure_filename
 import os
 import cv2
 import time
- 
+
 from datetime import timedelta
 
  
@@ -25,6 +27,11 @@ app = Flask(__name__)
 
 # 设置静态文件缓存过期时间
 app.send_file_max_age_default = timedelta(seconds=1)
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 @app.route('/', methods=['GET'])
@@ -55,6 +62,15 @@ def sign_up():
     else:
         return render_template('sign_up.html', message = msg)
 
+@app.route('/admin', methods=['POST', 'GET'])
+def list():
+   con = sqlite3.connect("database.db")
+   con.row_factory = sqlite3.Row
+   cur = con.cursor()
+   cur.execute("select * from user")
+   rows = cur.fetchall(); 
+   return render_template("list.html",rows = rows)
+
 # @app.route('/upload', methods=['POST', 'GET'])
 @app.route('/upload', methods=['POST', 'GET'])  # 添加路由
 def upload():
@@ -74,12 +90,12 @@ def upload():
  
         # 使用Opencv转换一下图片格式和名称
         img = cv2.imread(upload_path)
-        cv2.imwrite(os.path.join(basepath, 'static/images', 'test.jpg'), img)
+        cv2.imwrite(os.path.join(basepath, 'static/images', user_input + ".jpg"), img)
  
         return render_template('upload_ok.html',userinput=user_input,val1=time.time())
  
     return render_template('upload.html')
- 
+
 
 # type：1：保存 2：查询
 def dealInfo(name, pwd, type):
@@ -97,12 +113,12 @@ def dealInfo(name, pwd, type):
     if tableNames:
         pass
     else:
-        cursor.execute('create table user(username VARCHAR(20), password VARCHAR(20))')
+        cursor.execute('create table user(username VARCHAR(20), password VARCHAR(20), certificate INT(1))')
     # 判断用户名和密码是否为空
     if name == '' or pwd == '':
         return "Username and password can not be empty"
     # 查询该表格下是否有该条数据
-    cursor.execute("select * from user WHERE username = '%s'" %name)
+    cursor.execute("select username, password from user WHERE username = '%s'" %name)
     values = cursor.fetchall()
     if values:
         for value in values:
@@ -118,7 +134,7 @@ def dealInfo(name, pwd, type):
                 msg = "Wrong password, please re-enter..."
     else: # 没有查询到数据
         if type == 1:   # 信息保存成功，可以进行登录操作
-            cursor.execute("insert into user VALUES ('%s', '%s')" %(name, pwd))
+            cursor.execute("insert into user VALUES ('%s', '%s', 0)" %(name, pwd))
             cursor.close()
             conn.commit()
             conn.close()
@@ -128,6 +144,8 @@ def dealInfo(name, pwd, type):
     cursor.close()
     conn.close()
     return msg
+
+
 
 if __name__ == '__main__':
     # app.debug = True

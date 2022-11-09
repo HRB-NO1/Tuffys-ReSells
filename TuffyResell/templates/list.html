@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+   <body>
+   
+      <table border = 1>
+         <thead>
+            <td>username</td>
+            <td>password</td>
+            <td>certificate</td>
+
+         </thead>
+         
+         {% for row in rows %}
+            <tr>
+               <td>{{row["username"]}}</td>
+               <td>{{row["password"]}}</td>
+               <td> {{ row["certificate"]}}</td>
+            </tr>
+         {% endfor %}
+      </table>
+
+      <p>Update Certifacation: //No Function Yet<p>
+      <p>Update <input name="username" placeholder="Username" value="{{ username }}"> certifacation's state to <input name="state" placeholder="State(0 or 1)" value="{{ state }}"></p>
+
+    
+      <a href = "/">Go back to home page</a>
+      
+   </body>
+</html>
